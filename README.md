@@ -1,203 +1,77 @@
-# Case Técnico Dadosfera - Analista de Dados
+# Olist E-Commerce Analytics: Plataforma End-to-End de Inteligência de Dados
 
-**Candidato:** Matheus Siqueira  
-**Data:** Janeiro/2026  
-**Repositório:** MATHEUS_SIQUEIRA_DDF_TECH_012026  
-
----
-
-## 📋 Item 0: Agilidade e Planejamento
-
-Utilizei uma abordagem Ágil (Kanban) para organizar as entregas deste case, priorizando a infraestrutura de dados (Bronze/Silver) antes da camada de inteligência e visualização (Gold).
-
-### 📅 Status do Projeto
-
-#### ✅ Done (Concluído)
-- [x] **Item 0:** Planejamento e Arquitetura
-- [x] **Item 1:** Seleção do Dataset (Brazilian E-Commerce Olist)
-- [x] **Item 2:** Ingestão de Dados na Plataforma Dadosfera
-- [x] **Item 3:** Catalogação e Dicionário de Dados
-- [x] **Item 4:** Validação de Qualidade de Dados (Great Expectations)
-- [x] **Item 5:** Enriquecimento com IA (Feature Engineering / NLP)
-- [x] **Item 6:** Modelagem Dimensional (Star Schema)
-- [x] **Item 7:** Dashboard Analítico (Power BI)
-- [x] **Item 8:** Orquestração de Pipelines (ETL)
-- [x] **Item 9:** Data App Interativo (Streamlit)
-- [x] **Item 10:** Gravação do Vídeo de Apresentação (Storytelling)
+**Responsável Técnico:** Matheus Siqueira — *Especialista em Business Intelligence*
+**Stack Tecnológica:** Power BI, Python (spaCy), SQL (Snowflake), Streamlit, Data Quality
 
 ---
 
-## 💾 Item 1: Sobre a Base de Dados
+## 🚀 Visão Geral do Projeto
 
-Para simular um cenário real de **E-commerce Brasileiro** com alta complexidade e volume (>100k registros), selecionei o **Brazilian E-Commerce Public Dataset by Olist**.
+Este repositório apresenta a construção de uma solução completa de Analytics para um ecossistema de e-commerce de alta volumetria (Dataset Olist, +100k pedidos). O projeto foi desenvolvido para demonstrar a implementação de uma esteira de dados moderna, cobrindo desde a ingestão bruta até a entrega de insights prescritivos via IA e Dashboards de UX avançado.
 
-* **Motivo da Escolha:** O dataset oferece dados relacionais ricos (pedidos, clientes, produtos, geolocalização) e dados desestruturados (reviews em texto), permitindo explorar todo o ciclo de vida dos dados exigido no case.
-* **Volume:** A tabela principal `order_items` possui mais de 112.000 registros, atendendo ao requisito mínimo do case.
-
----
-
-## 🔌 Item 2 & 3: Integração e Exploração (Dadosfera)
-
-Realizei a ingestão dos arquivos CSV brutos para a camada de **Coleta** da Dadosfera. Os dados foram catalogados com descrições funcionais e técnicas para facilitar o self-service analytics por usuários de negócio.
-
-> 📘 **Documentação Técnica:** Para detalhes aprofundados sobre a linhagem, tipagem e regras de negócio aplicadas em cada tabela (Silver/Gold), consulte o **[Dicionário de Dados Técnico](./DATA_DICTIONARY.md)**.
-
-**Evidência da Carga e Catalogação na Plataforma:**
-
-![Print da Dadosfera - Ingestão](assets/item23_coleta_dadosfera.png)
+### 📅 Arquitetura e Fluxo de Entrega
+- **Planejamento:** Organização focada em infraestrutura Bronze/Silver antes da camada Gold (Modelagem).
+- **Ingestão & Governança:** Processamento de Big Data com catalogação técnica e funcional.
+- **Qualidade de Dados:** Implementação de **Data Contracts** para garantir a integridade da camada de consumo.
+- **Enriquecimento com IA:** Motor de **NLP** para extração de sentimento e calibração de Ground Truth.
+- **Visualização:** Modelagem Dimensional (**Star Schema**) e Data App interativo.
 
 ---
 
-## 🕵️ Item 4: Data Quality (Observabilidade)
+## 🕵️ Data Quality e Observabilidade (Data Contracts)
 
-Implementei um pipeline de auditoria automatizada fundamentado em **Data Contracts** e observabilidade de dados. Utilizei uma lógica de validação inspirada no framework *Great Expectations* para garantir que apenas dados íntegros e confiáveis avancem para a camada de modelagem. Todo o motor de auditoria e monitoramento está centralizado no arquivo **`data_quality.py`** na raiz do repositório.
+Para garantir que a tomada de decisão seja baseada em dados íntegros, implementei um pipeline de auditoria automatizada fundamentado em observabilidade, utilizando lógica inspirada no framework *Great Expectations*.
 
-**Regras de Auditoria Aplicadas:**
-* **Consistência de Domínio:** Validação estatística rigorosa para garantir que a coluna `review_score` esteja dentro do intervalo esperado de **1 a 5**.
-* **Integridade Referencial:** Check de completude na **Chave Primária** `review_id` (Zero Nulls), assegurando a unicidade e rastreabilidade total dos registros.
-* **Health Check & Monitoring:** Geração automática de métricas descritivas (Mínimo, Máximo e Média) para monitoramento de saúde da base e detecção precoce de anomalias.
-
-**Evidência do Relatório de Qualidade:**
-
-![Relatório de Data Quality](assets/item4_data_quality.png)
+**Regras de Auditoria (Script `data_quality.py`):**
+* **Consistência de Domínio:** Validação estatística para assegurar que os scores de review estejam rigorosamente entre 1 e 5.
+* **Integridade Referencial:** Monitoramento de nulos em chaves primárias (PKs) para evitar "dados órfãos".
+* **Health Check:** Geração de métricas descritivas em tempo real para detecção de anomalias na carga.
 
 ---
 
-## 🤖 Item 5: Enriquecimento com IA (Advanced NLP no Power Query)
+## 🤖 Engenharia de Features com IA (Advanced NLP)
 
-Para processar o volume de textos desestruturados (`review_comment_message`), desenvolvi um motor de **NLP** robusto utilizando a biblioteca **spaCy** (modelo `pt_core_news_sm`).
+O diferencial desta solução é o processamento de textos desestruturados para transformar reviews em métricas acionáveis.
 
-**Diferencial Técnico: Motor de Inferência Híbrida**
-Implementei uma **Calibração de Ground Truth**, onde o algoritmo correlaciona a semântica extraída via IA com a nota real deixada pelo cliente, calibrando a polaridade final para refletir a experiência real do usuário.
-
-**Integração e Portabilidade:**
-A lógica está encapsulada no script **`power_query_nlp.py`**. O código foi portado para o ambiente do **Power Query (Python Step)**, permitindo o enriquecimento dinâmico do modelo de dados diretamente no Power BI a cada refresh.
-
-* **Otimização Upstream:** Implementei uma filtragem prévia no Power Query para enviar ao script Python apenas as colunas estritamente necessárias (`id`, `score`, `text`), reduzindo o tempo de processamento e serialização de dados.
-* **Métricas de Saída:** Geração das colunas `Polaridade_IA` (-1.0 a +1.0) e `Sentimento_IA` (Positivo 🟢 / Neutro 🟡 / Negativo 🔴).
-
-**Evidência da Integração no Power BI:**
-
-![Script Python no Power Query](assets/powerquery_python_integration.png)
-
-**Evidência do Pipeline de NLP:**
-
-![Output do Script de IA](assets/item5_nlp.png)
+**Motor de Inferência Híbrida (`power_query_nlp.py`):**
+* **NLP com spaCy:** Utilização de lematização para identificar a raiz semântica das reclamações e elogios.
+* **Calibração de Sentimento:** Desenvolvimento do **"IA Score"**, que correlaciona a semântica do texto com a nota real deixada pelo cliente, eliminando vieses e entregando uma percepção fiel da experiência do usuário.
 
 ---
 
-## 📐 Item 6: Modelagem de Dados
+## 📐 Modelagem de Dados e Performance
 
-Desenvolvi uma modelagem **Star Schema (Fato/Dimensão)** no Power BI para garantir alta performance nas consultas DAX e facilidade de uso para o usuário final.
+Desenvolvi uma modelagem **Star Schema** (Fato/Dimensão) focada em alta performance de consulta no motor tabular.
 
-### 🏗️ Engenharia de Dados e Performance (Silver Layer)
-Apliquei conceitos avançados de engenharia na etapa de transformação (Power Query) para garantir escalabilidade e governança:
-
-1.  **Governança (Naming Conventions):** Adotei estritamente o padrão **`snake_case`** (ex: `product_category_name` em vez de `Nome da Categoria`) e removi acentos/caracteres especiais.
-    * *Motivo:* Garantir interoperabilidade imediata caso o modelo seja migrado para Data Lakes (Parquet/Delta) ou Bancos SQL, onde espaços e acentos costumam quebrar pipelines.
-2.  **Vertical Partitioning (Performance):** Realizei a remoção agressiva de colunas de alta cardinalidade não utilizadas (ex: `product_description`) antes da carga.
-    * *Impacto:* Redução drástica do consumo de memória do motor VertiPaq e aceleração do refresh.
-3.  **Type Safety & Localization:** Implementação de tratamento explícito de locale (`en-US`) na camada M.
-    * *Motivo:* Garantir que preços e coordenadas geográficas vindos de CSVs internacionais (separador decimal ponto) sejam interpretados corretamente, evitando erros de magnitude financeira.
-4.  **Data Enrichment (Bônus 2):** Enriquecimento da dimensão de clientes (`dCustomers`) com coordenadas exatas de **Latitude e Longitude**.
-    * *Técnica:* Realizei o agrupamento (Group By) da base de geolocalização (reduzindo 1MM+ linhas para chaves únicas de CEP) antes de realizar o *Merge*, garantindo performance sem perder precisão geográfica.
-
-### Estrutura do Modelo
-* **Tabela Fato (`fOrderItems`):** Contém os dados transacionais (granularidade por item vendido).
-    * *Métricas:* Valor de Venda, Valor de Frete, Quantidade.
-* **Dimensões (`d...`):** Tabelas auxiliares que fornecem contexto descritivo.
-    * `dProducts` (Categorias higienizadas e padronizadas).
-    * `dOrders` (Status e datas do ciclo de vida do pedido).
-    * `dCustomers` (Localização geográfica por Estado/Cidade).
-    * `dReviews` (Comentários e notas de satisfação enriquecidas via IA).
-
-**Diagrama de Entidade-Relacionamento (DER):**
-
-![Modelagem Star Schema](assets/item6_modelagem.png)
+### 🏗️ Engenharia de Analytics
+1. **Governança de Dados:** Padronização em `snake_case` para garantir interoperabilidade entre sistemas.
+2. **Vertical Partitioning:** Remoção estratégica de colunas de alta cardinalidade para otimizar o consumo de memória RAM e acelerar o refresh.
+3. **Type Safety:** Tratamento de locale e tipagem explícita para evitar erros em campos monetários e geográficos.
+4. **Data Enrichment:** Enriquecimento geográfico (Lat/Long) para análises de capilaridade de mercado.
 
 ---
 
-## 📊 Item 7 & Bônus 3: Análise de Dados (Power BI & SQL)
+## 📊 Dashboards e UX Avançado
 
-Para cumprir o requisito de análise exploratória e validação de categorias, utilizei o **SQL Lab** da Dadosfera (Engine Snowflake) antes de partir para a visualização no Power BI.
+A solução de visualização foi dividida em camadas estratégicas para diferentes níveis de decisão:
 
-### 🔍 Validação Exploratória (SQL)
-**Objetivo:** Validar a distribuição de produtos por categoria diretamente na fonte (Silver Layer), assegurando a integridade dos dados antes da modelagem.
+1. **Executive Insights:** Focado em faturamento, saúde financeira e breakdown de gargalos logísticos (Lead Time).
+2. **Operational Intelligence:** Monitoramento de "Best Sellers", áreas de atenção crítica e diagnóstico automático de **Risco de Churn** baseado no sentimento.
 
-**Evidência da Execução (Query + Resultado):**
-
-![Resultado SQL](assets/item7_sql_query.png)
-
-### 🚀 Dashboard Executivo (Power BI)
-Desenvolvi um **Data App** no Power BI dividido em duas camadas estratégicas, unindo Engenharia de Dados robusta com UX avançado via HTML/SVG (DAX).
-
-**Link para o Arquivo:** [Dashboard Power BI (.pbix)](./dashboard_analise_olist.pbix)
-
-#### 1. Executive Insights (Visão Macro/Estratégica)
-Focada no C-Level, consolidando a saúde financeira e logística.
-* **Header Dinâmico:** Visualização *Glassmorphism* com KPIs de Faturamento e Sentimento Geral.
-* **Breakdown de Logística:** Análise de gargalos (Lead Time) separando Aprovação, Separação e Last Mile.
-* **Top 3 Categorias:** Ranking inteligente que cruza Receita com Percepção do Cliente (IA Score).
-
-![Executive Insights Dashboard](assets/item10_powerbi1.png)
-
-#### 2. Operational Intelligence (Visão Micro/Tática)
-Focada em identificar ofensores, produtos críticos e oportunidades geográficas.
-* **Operational Header (Ranking em Tempo Real):** Identificação automática do "Best Seller", "Top Região" e "Área de Atenção Crítica" (pior sentimento).
-* **Product Deep Dive (Card 360º):** Diagnóstico automático que cruza Vendas vs. Sentimento para classificar produtos (ex: "Risco de Churn" ou "Estrela de Vendas").
-* **Geo-Intelligence:** Mapa de calor utilizando coordenadas exatas (Lat/Long) para identificar densidade de demanda.
-
-![Operational Intelligence Dashboard](assets/item10_powerbi2.png)
-
-#### Destaques Técnicos
-* **UX/UI Avançado:** Substituição de cartões nativos por componentes HTML/CSS injetados via DAX para flexibilidade total de design.
-* **Otimização da Dimensão Tempo (`dTime`):** Tabela dimensão otimizada com granularidade de minutos para reduzir cardinalidade e melhorar performance do VertiPaq.
-* **Glossário Integrado:** Implementação de Tooltips explicativas (Mini-manual) para garantir a governança e entendimento das métricas de IA pelo usuário final.
+**Destaques Técnicos:**
+* Injeção de **HTML/SVG via DAX** para visuais customizados.
+* Mapa de calor de alta densidade para logística de Last Mile.
+* Glossário de métricas integrado para governança de dados.
 
 ---
 
-## 🌊 Item 8: Pipeline de Dados (Orquestração)
+## 📱 Interactive Data Application (Streamlit)
 
-Para garantir a atualização contínua e a governança dos dados, desenhei um pipeline de ingestão na Dadosfera que automatiza a coleta dos arquivos brutos (Raw Data).
-
-**Fluxo Desenhado:**
-1. **Coleta:** Leitura incremental de arquivos CSV em Bucket S3.
-2. **Ingestão:** Carga para a Landing Zone da Dadosfera.
-3. **Catalogação:** Registro automático de metadados técnicos.
-4. **Agendamento:** Execução diária automatizada.
-
-**Evidência do Pipeline Catalogado:**
-
-![Pipeline Dadosfera](assets/item8_pipeline.png)
+Além do BI tradicional, desenvolvi um **Data App** em Python para democratizar o acesso aos KPIs operacionais.
+* Filtros dinâmicos por região e categoria.
+* Monitoramento de NPS e metas de entrega.
+* Interface otimizada para consulta rápida por gestores de campo.
 
 ---
 
-## 📱 Item 9: Data App (Streamlit)
-
-Desenvolvi uma aplicação interativa utilizando o framework **Streamlit** (Python) para democratizar o acesso aos dados de satisfação. O app permite que gestores filtrem reviews por região e acompanhem KPIs em tempo real.
-
-**Funcionalidades:**
-* Filtros Dinâmicos de Região.
-* Formatação monetária padrão BRL (R$).
-* Comparativo de Metas (vs Mês Anterior).
-* Visualização Dark Mode para alto contraste.
-
-**Preview do App:**
-
-![Data App Streamlit](assets/item9_data_app.png)
-
-### 🛠️ Como Executar este Data App
-O desenvolvimento foi realizado utilizando o **Google Colab**. Para reproduzir localmente:
-
-1. **Pré-requisitos:** Python 3.9+, Streamlit, Pandas e Plotly.
-2. **Instalação:** `pip install streamlit pandas plotly`.
-3. **Execução:** Navegue até a pasta do projeto e execute no terminal: `streamlit run app.py`.
-4. **Acesso Remoto (Cloud):** Utilizado túnel via **Ngrok** para deploy simulado durante o desenvolvimento.
-
----
-
-## 📹 Item 10: Apresentação Executiva (Vídeo)
-
-Confira a apresentação completa da solução, onde detalho a arquitetura técnica, as decisões de engenharia e navego pelas funcionalidades de toda a solução.
-
-👉 **[CLIQUE AQUI PARA ASSISTIR AO VÍDEO](https://www.youtube.com/watch?v=nt_Y4eDg1Gc)**
+**Desenvolvido por Matheus Siqueira**
